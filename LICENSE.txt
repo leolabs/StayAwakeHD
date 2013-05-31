@@ -1,0 +1,1 @@
+This app is completely open-source and can be modified as you want as long as you keep the branding (leolabs.org) and don't sell this code.

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="jquery.js"></script>
+
+    <script>
+        var currWin = Ti.UI.getCurrentWindow();
+        currWin.setSize(500, 458);
+        currWin.setResizable(false);
+        currWin.setTitle("StayAwake HD - About");
+    </script>
+
+    <style type="text/css">
+        body {
+            font-family: "Lucida Grande", sans-serif;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body style="background-color: #f4f4f4; border-top: 1px solid #c4c4c4; margin: 0">
+
+<div style="padding: 10px; text-align: center; margin-top: 10px">
+    <img src="logo-leolabs.png" style="height: 100px; width: auto; margin-right: 30px">
+    <img src="default_app_logo.png" style="height: 100px; width: auto">
+</div>
+
+<div style="padding: 10px; text-align: center">
+    <p>Version 1.0.0</p>
+    <p>StayAwake HD is a one-day project by Leo Bernard aka leolabs. I created this app using TideSDK which is still
+        in development but already stable enough for this kind of apps. This is my first multi-platform project, so if
+        you have suggestions, ideas, or anything else, just leave me a message on Twitter @leolabs_org.</p>
+    <p>So how does StayAwake HD work? The idea behind this app is fairly simple. Some external hard drives, like the
+        WD MyBook, turn themselves off when they aren't used for a while. When you want to open the Finder or Explorer,
+        the system will sometimes freeze until the hard drive has started again, which can take some time. StayAwakeHD
+        creates and modifies a file on these external hard drives so they won't turn off anymore. This resolves the
+        issues mentioned above and some other problems.</p>
+</div>
+
+<div style="padding: 10px; border-top: 1px solid #c4c4c4; ">
+    <button style="float: left" onclick="Ti.Platform.openURL('http://leolabs.org')">Go to leolabs.org</button>
+
+    <button style="float: right" onclick="Ti.UI.getCurrentWindow().close()">Close</button>
+</div>
+
+</body>
+</html>

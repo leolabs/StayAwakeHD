@@ -1,0 +1,80 @@
+<html>
+<head>
+    <script>
+        function openSettings(){
+            if(settingsWindow == null){
+                var settingsWindow = Ti.UI.createWindow("app://settings.html");
+                settingsWindow.userProperties = userProperties;
+                settingsWindow.userPropertiesFile = file;
+                settingsWindow.trayWIndow = Ti.UI.getCurrentWindow();
+                settingsWindow.open();
+            }
+        }
+
+        function touchHardDrives(){
+            tray.setIcon("tray_working.png");
+            var hardDrives = userProperties.getString("hardDrivePaths", "").split(",");
+            for(i = 0; i < hardDrives.length; i++){
+                if(hardDrives[i] != ""){
+                    try{
+                        var currFile = Ti.Filesystem.getFileStream(hardDrives[i], ".stayAwakeHD");
+                        currFile.open(Ti.Filesystem.MODE_WRITE);
+                        currFile.write(new Date().getTime());
+                        currFile.close();
+                    }catch(e){
+                        Ti.Notification.createNotification({
+                            'title' : 'Error while keeping hard drives alive',
+                            'message' : 'Something happend while I tried to keep "' + hardDrives[i] +
+                                        '" alive. Click here to see the error.',
+                            'timeout' : 10,
+                            'callback' : function(){alert(e)}
+                        }).show();
+                    }
+                }
+            }
+
+            setTimeout(function(){tray.setIcon("tray.png")}, 500);
+            currentTimeout = setTimeout(touchHardDrives, userProperties.getDouble("touchInterval") * 60000);
+        }
+    </script>
+
+    <script>
+        Ti.UI.getCurrentWindow().hide();
+
+        var file = Ti.Filesystem.getFile(Ti.API.application.dataPath, "user.properties");
+        var userProperties;
+        var currentTimeout;
+
+        if(file.exists()) {
+            userProperties = Ti.App.loadProperties(file.toString());
+        } else {
+            userProperties = Ti.App.createProperties({
+                hardDrivePaths : "",
+                touchInterval : 0.5
+            });
+
+            alert("It seems like you've just installed StayAwake HD. I'll open the settings pane for you so you can" +
+                    " configure this app.");
+            openSettings();
+        }
+
+        var trayMenu = Ti.UI.createMenu();
+
+        trayMenu.addItem("Settings", openSettings, null);
+        trayMenu.addItem("Force-wake hard drives", function(){clearTimeout(currentTimeout); touchHardDrives();}, null);
+        trayMenu.addItem("About", function(){Ti.UI.createWindow("app://about.html").open();}, null);
+        trayMenu.addSeparatorItem();
+        trayMenu.addItem("Exit", function(){Ti.App.exit()}, null);
+
+        var tray = Ti.UI.addTray("tray.png");
+        tray.setHint("StayAwake HD");
+        tray.setMenu(trayMenu);
+    </script>
+
+    <script>
+        touchHardDrives();
+    </script>
+</head>
+<body style="background-color:#1c1c1c;margin:0">
+</body>
+</html>

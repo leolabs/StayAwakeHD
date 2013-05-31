@@ -1,0 +1,98 @@
+<html>
+<head>
+    <script src="jquery.js"></script>
+    <script src="jquery.tagsinput.js"></script>
+    <link rel="stylesheet" href="jquery.tagsinput.css">
+
+    <script>
+        function selectPath(){
+            currWin.openFolderChooserDialog(function(path){
+                if(Ti.Filesystem.getFile(path[0]).isWritable()){
+                    $("#hardDrive").removeTag(path[0]);
+                    $("#hardDrive").addTag(path[0]);
+                }else{
+                    alert("I'm sorry, but I can't write to this path. Please make " +
+                            "sure this path isn't read-only and try it again");
+                }
+            }, {
+                title: "Choose the hard drive that will be held awake"
+            });
+        }
+
+        function sliderChanged(){
+            jQuery("#intervalMeter").text(jQuery("#intervalSlider").val());
+        }
+
+        function saveChanges(){
+            currWin.userProperties.setString("hardDrivePaths", $("#hardDrive").val());
+            currWin.userProperties.setString("touchInterval", $("#intervalSlider").val());
+            currWin.userProperties.saveTo(currWin.userPropertiesFile.toString());
+            currWin.close();
+        }
+
+        function openAbout(){
+            var aboutWindow = Ti.UI.createWindow("app://about.html").open();
+        }
+    </script>
+
+    <script>
+        var currWin = Ti.UI.getCurrentWindow();
+        currWin.setSize(600, 212);
+        currWin.setResizable(false);
+        currWin.setTitle("StayAwake HD - Settings");
+
+        var hdPaths  = currWin.userProperties.getString("hardDrivePaths", "");
+        var interval = currWin.userProperties.getDouble("touchInterval", 15);
+
+        $(document).ready(function(){
+            $("#hardDrive").val(hdPaths);
+            $('#hardDrive').tagsInput({
+                'defaultText':'add path'
+            });
+            $("#intervalSlider").val(interval);
+            sliderChanged();
+        });
+    </script>
+
+    <style type="text/css">
+        body {
+            font-family: "Lucida Grande", sans-serif;
+            font-size: 13px;
+        }
+
+        td {
+            padding: 4px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+
+<body style="background-color: #f4f4f4; border-top: 1px solid #c4c4c4; margin: 0;">
+    <div style="background-color: #ebebeb; border-bottom: 1px solid #c4c4c4; padding: 10px">
+        StayAwake HD will keep your hard drive from turning off by accessing a file every few minutes. Just specify the path where StayAwake HD should access the file and set the interval. The interval should be as large as possible, just try out what'll work best for you.
+    </div>
+
+    <div style="padding: 10px">
+        <table style="table-layout: fixed; width: 100%">
+            <tr>
+                <td style="text-align: right; width: 90px"><label for="hardDrive">Hard drives:</label> </td>
+                <td><input style="width: 100%" id="hardDrive" type="text" placeholder="Paths to your hard drives, seperated by semicolons"></td>
+                <td style="width: 120px"><button id="selectPath" style="width: 100%" onclick="selectPath()">Add hard drive</button></td>
+            </tr>
+
+            <tr>
+                <td style="text-align: right; width: 90px"><label for="intervalSlider">Interval:</label> </td>
+                <td><input style="width: 99%" id="intervalSlider" type="range" min="0.5" max="30" step="0.5" onchange="sliderChanged()"></td>
+                <td style="width: 120px"><span id="intervalMeter">XX</span> Minutes</td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="padding: 10px; border-top: 1px solid #c4c4c4">
+        <button style="float: left; margin-left: 4px;" onclick="openAbout()">About</button>
+        <button style="float: right; margin-right: 4px;" onclick="saveChanges()">Save changes</button>
+        <button style="float: right; margin-right: 10px;" onclick="currWin.close()">Cancel</button>
+    </div>
+</body>
+</html>
